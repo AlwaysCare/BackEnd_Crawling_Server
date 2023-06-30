@@ -1,52 +1,19 @@
-from fastapi import FastAPI, Query
-from typing import Optional
-import os
-from time import sleep
-import numpy
-
-
-from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import ElementNotInteractableException
-from selenium.common.exceptions import StaleElementReferenceException
+from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup
+from time import sleep
 
-app = FastAPI()
+def createDriver() -> webdriver.Chrome:
+    options = webdriver.ChromeOptions()
+    options.add_argument('headless')
+    options.add_argument('lang=ko_KR')
+    driver = webdriver.Chrome(service= Service(ChromeDriverManager().install()), options = options)
 
-#ChromeDriver setting
-options = webdriver.ChromeOptions()
-options.add_argument('headless')
-options.add_argument('lang=ko_KR')
-driver = webdriver.Chrome(service= Service(ChromeDriverManager().install()), options = options)
-name_list = []
-all_review = []
-score_list = []
-
-@app.get("/user/hospital")
-async def hospital(address: Optional[str] = Query(None, max_length=30)) :
-    global driver
-
-    driver.implicitly_wait(4)  # 렌더링 될때까지 기다린다 4초
-    driver.get('https://map.kakao.com/')  # 주소 가져오기
-
-    # 검색할 목록 -> server로 변경시 지역 이름 받아와서 검색
-    place_infos = ['상도 동물병원']
-
-    for i, place in enumerate(place_infos):
-        # delay
-        if i % 4 == 0 and i != 0:
-            sleep(5)
-        print("start")
-        search(place)
-
-    
-    result = {"name" : name_list, "score" : score_list, "review" : all_review}
-
-    return result
+    return driver
 
 def search(place):
     global driver
@@ -94,6 +61,7 @@ def crawling(place, place_lists):
         # 첫 페이지 -> 일단은 첫 페이지만 review 저장
         extract_review(place_name)
 
+        driver.close()
         driver.switch_to.window(driver.window_handles[0])  # 검색 탭으로 전환
 
 

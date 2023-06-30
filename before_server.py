@@ -23,7 +23,6 @@ all_review = []
 score_list = []
 
 
-
 def main():
     global driver, load_wb, review_num
 
