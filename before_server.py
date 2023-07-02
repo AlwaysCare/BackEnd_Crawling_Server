@@ -2,7 +2,7 @@ import os
 from time import sleep
 import numpy
 
-
+from pyvirtualdisplay import Display
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
@@ -17,6 +17,7 @@ from bs4 import BeautifulSoup
 options = webdriver.ChromeOptions()
 options.add_argument('headless')
 options.add_argument('lang=ko_KR')
+
 driver = webdriver.Chrome(service= Service(ChromeDriverManager().install()), options = options)
 name_list = []
 all_review = []
