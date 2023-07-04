@@ -56,7 +56,6 @@ def search(place):
     driver.find_element(By.XPATH, '//*[@id="search.keyword.submit"]').send_keys(Keys.ENTER)  # Enter로 검색
     sleep(1)
 
-    # 검색된 정보가 있는 경우에만 탐색
     # 1번 페이지 place list 읽기
     html = driver.page_source
 
@@ -89,8 +88,6 @@ def crawling(place, place_lists):
         driver.switch_to.window(driver.window_handles[-1])  # 상세정보 탭으로 변환
         sleep(1)
         name_list.append(place_name)
-        # print('####', place_name)
-
         # 첫 페이지 -> 일단은 첫 페이지만 review 저장
         extract_review(place_name)
 
@@ -108,10 +105,14 @@ def extract_review(place_name):
     # 첫 페이지 리뷰 목록 찾기
     review_lists = soup.select('.list_evaluation > li')
     #별점 가져오기
-    num_rate = soup.select('.grade_star > em')
-    rating = num_rate[0].text
-    score_list.append(rating.replace('점',''))
-    # print(rating)
+    try :
+        num_rate = soup.select('.grade_star > em')
+        rating = num_rate[0].text
+        score_list.append(rating.replace('점',''))
+
+    except :
+        num_rate = 0.0
+        score_list.append(num_rate)
 
     # 리뷰가 있는 경우
     if len(review_lists) != 0:
